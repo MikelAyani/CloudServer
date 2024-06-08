@@ -22,11 +22,6 @@ app.use((req, res, next) => {
 app.post('/api/:key', (req, res) => {
   const key = req.params.key;
   const value = req.body;
-  console.log(`POST /api/${key} called with data: ${JSON.stringify(value)}`);
-  if (!value || typeof value !== 'object') {
-    res.status(400).send('Invalid JSON data');
-    return;
-  }
   dataStore[key] = value;
   console.log(`Data stored for key ${key}: ${JSON.stringify(dataStore[key])}`);
   res.json({ message: `Data stored for key: ${key}`, data: value });
