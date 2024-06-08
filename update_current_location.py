@@ -2,13 +2,13 @@
 import requests
 
 # Define the server URL
-#server_url = "https://maiklof-http-server-chi.vercel.app/api/current_location"
-server_url = "http://localhost:5000/api/current_location"
+server_url = "https://maiklof-http-server-chi.vercel.app/api/current_location"
+#server_url = "http://localhost:5000/api/current_location"
 
 # Define the JSON data to send
 data = {
     "location": {
-        "latitude": "58.389606",
+        "latitude": "68.389606",
         "longitude": "13.847002",
     },
     }

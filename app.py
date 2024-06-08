@@ -1,37 +1,28 @@
 from flask import Flask, request, jsonify
-import json
+import requests
 import os
+import json
 
 app = Flask(__name__)
 
-# File to store the data
-DATA_FILE = 'tmp/data_store.json'
+# Environment variables for Vercel KV REST API
+KV_REST_API_URL = os.getenv('KV_REST_API_URL')
+KV_REST_API_TOKEN = os.getenv('KV_REST_API_TOKEN')
 
-# In-memory data store
-data_store = {}
-
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, 'r') as f:
-            return json.load(f)
-    return {}
-
-def save_data():
-    with open(DATA_FILE, 'w') as f:
-        json.dump(data_store, f)
-
-# Load data from file at startup
-data_store = load_data()
+def get_headers():
+    return {
+        'Authorization': f'Bearer {KV_REST_API_TOKEN}',
+        'Content-Type': 'application/json'
+    }
 
 @app.route('/api/<key>', methods=['GET'])
 def get_data(key):
-    # Load data from file before handling the request
-    global data_store
-    data_store = load_data()
-    if key in data_store:
-        return jsonify(data_store[key])
-    else:
-        return 'No data found for key: {}'.format(key), 404
+    response = requests.get(f'{KV_REST_API_URL}/get/{key}', headers=get_headers())
+    if response.status_code == 200:
+        data = response.json().get('result')
+        if data:
+            return jsonify(json.loads(data))
+    return 'No data found for key: {}'.format(key), 404
 
 @app.route('/api/<key>', methods=['POST'])
 def store_data(key):
@@ -41,16 +32,22 @@ def store_data(key):
         data = request.data
     if not data or not isinstance(data, dict):
         return 'Invalid JSON data', 400
-    data_store[key] = data
-    save_data()  # Save data to file after updating the data store
-    return jsonify({'message': 'Data stored for key: {}'.format(key), 'data': data})
+    payload = {
+        'value': json.dumps(data)
+    }
+    response = requests.post(f'{KV_REST_API_URL}/set/{key}', headers=get_headers(), json=payload)
+    if response.status_code == 200:
+        return jsonify({'message': 'Data stored for key: {}'.format(key), 'data': data})
+    return 'Failed to store data', 500
 
 @app.route('/api', methods=['GET'])
 def list_data():
-    # Load data from file before handling the request
-    global data_store
-    data_store = load_data()
-    return jsonify(data_store)
+    response = requests.get(f'{KV_REST_API_URL}/keys', headers=get_headers())
+    if response.status_code == 200:
+        keys = response.json().get('result', [])
+        data_store = {key: json.loads(requests.get(f'{KV_REST_API_URL}/get/{key}', headers=get_headers()).json().get('result')) for key in keys}
+        return jsonify(data_store)
+    return 'Failed to list data', 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
