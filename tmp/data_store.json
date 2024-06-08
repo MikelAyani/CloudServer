@@ -1,1 +1,1 @@
-{"test": "Hello World!", "current_location": {"location": {"latitude": "58.389606", "longitude": "13.847002"}}}
+{"test": "Hello World!", "current_location": {"location": {"latitude": "58.389606", "longitude": "13.847002"}}, "weather_today": {"data": {"Icon": "http://openweathermap.org/img/w/10d.png", "Rain": "7.98", "Cloudiness": "96", "Description": "moderate rain", "Air humidity": "84", "Atmospheric pressure": "1006"}}}
