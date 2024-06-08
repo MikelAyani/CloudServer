@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import json
 
 app = Flask(__name__)
 
@@ -8,13 +9,16 @@ data_store = {}
 @app.route('/api/<key>', methods=['GET'])
 def get_data(key):
     if key in data_store:
-        return jsonify({key: data_store[key]})
+        return jsonify(data_store[key])
     else:
         return 'No data found for key: {}'.format(key), 404
 
 @app.route('/api/<key>', methods=['POST'])
 def store_data(key):
-    data = request.json
+    if request.is_json:
+        data = json.loads(request.data)
+    else:
+        data = request.data
     if not data or not isinstance(data, dict):
         return 'Invalid JSON data', 400
     data_store[key] = data
