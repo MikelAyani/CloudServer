@@ -1,14 +1,18 @@
 const express = require('express');
-
 const app = express();
+const port = process.env.PORT || 3000;
 
-app.use((req, res, next) => {
-  console.log('Time: ', Date.now());
-  next();
+app.use(express.json());
+
+app.get('/api', (req, res) => {
+  res.send('Hello, GET request!');
 });
 
-app.get('/', (req, res) => {
-  res.send('Successful response.');
+app.post('/api', (req, res) => {
+  const data = req.body;
+  res.send(`Hello, POST request! You sent: ${JSON.stringify(data)}`);
 });
 
-app.listen(3000, () => console.log('Example app is listening on port 3000.'));
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
