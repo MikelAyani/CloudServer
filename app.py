@@ -1,28 +1,23 @@
 from flask import Flask, request, jsonify
-import requests
+import redis
 import os
 import json
 
 app = Flask(__name__)
 
-# Environment variables for Vercel KV REST API
-KV_REST_API_URL = os.getenv('KV_REST_API_URL')
-KV_REST_API_TOKEN = os.getenv('KV_REST_API_TOKEN')
+# Environment variables for Vercel KV
+KV_URL = os.getenv('KV_URL')
 
-def get_headers():
-    return {
-        'Authorization': f'Bearer {KV_REST_API_TOKEN}',
-        'Content-Type': 'application/json'
-    }
+# Initialize Redis connection
+redis_client = redis.from_url(KV_URL, decode_responses=True)
 
 @app.route('/api/<key>', methods=['GET'])
 def get_data(key):
-    response = requests.get(f'{KV_REST_API_URL}/get/{key}', headers=get_headers())
-    if response.status_code == 200:
-        data = response.json().get('result')
-        if data:
-            return jsonify(json.loads(data))
-    return 'No data found for key: {}'.format(key), 404
+    data = redis_client.get(key)
+    if data:
+        return jsonify(json.loads(data))
+    else:
+        return 'No data found for key: {}'.format(key), 404
 
 @app.route('/api/<key>', methods=['POST'])
 def store_data(key):
@@ -32,22 +27,14 @@ def store_data(key):
         data = request.data
     if not data or not isinstance(data, dict):
         return 'Invalid JSON data', 400
-    payload = {
-        'value': json.dumps(data)
-    }
-    response = requests.post(f'{KV_REST_API_URL}/set/{key}', headers=get_headers(), json=payload)
-    if response.status_code == 200:
-        return jsonify({'message': 'Data stored for key: {}'.format(key), 'data': data})
-    return 'Failed to store data', 500
+    redis_client.set(key, json.dumps(data))
+    return jsonify({'message': 'Data stored for key: {}'.format(key), 'data': data})
 
 @app.route('/api', methods=['GET'])
 def list_data():
-    response = requests.get(f'{KV_REST_API_URL}/keys', headers=get_headers())
-    if response.status_code == 200:
-        keys = response.json().get('result', [])
-        data_store = {key: json.loads(requests.get(f'{KV_REST_API_URL}/get/{key}', headers=get_headers()).json().get('result')) for key in keys}
-        return jsonify(data_store)
-    return 'Failed to list data', 500
+    keys = redis_client.keys('*')
+    data_store = {key: json.loads(redis_client.get(key)) for key in keys}
+    return jsonify(data_store)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
