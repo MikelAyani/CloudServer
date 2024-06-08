@@ -1,15 +1,12 @@
 from flask import Flask, request, jsonify
-import redis
+from vercel_kv_sdk import KV
 import os
 import json
 
 app = Flask(__name__)
 
-# Environment variables for Vercel KV
-KV_URL = os.getenv('KV_URL')
-
 # Initialize Redis connection
-redis_client = redis.from_url(KV_URL, decode_responses=True)
+redis_client = KV()
 
 @app.route('/api/<key>', methods=['GET'])
 def get_data(key):
