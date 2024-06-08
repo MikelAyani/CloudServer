@@ -1,26 +1,14 @@
 const express = require('express');
-const bodyParser = require('body-parser');
 
 const app = express();
-app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  console.log('Time: ', Date.now());
+  next();
+});
 
 app.get('/', (req, res) => {
-    res.send(`Hello World!`);
-  });
-
-let weatherData = {};
-
-app.post('/weather', (req, res) => {
-    weatherData = req.body;
-    res.send({ status: 'success' });
+  res.send('Successful response.');
 });
 
-app.get('/get_weather', (req, res) => {
-    res.send(weatherData);
-});
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server running on port ${port}`);
-});
-
+app.listen(3000, () => console.log('Example app is listening on port 3000.'));
