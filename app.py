@@ -29,9 +29,7 @@ def store_data(key):
 
 @app.route('/api', methods=['GET'])
 def list_data():
-    keys = redis_client.keys('*')
-    data_store = {key: json.loads(redis_client.get(key)) for key in keys}
-    return jsonify(data_store)
+    return jsonify({'message': 'Welcome to the API'})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
