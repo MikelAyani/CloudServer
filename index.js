@@ -22,8 +22,8 @@ app.use((req, res, next) => {
 app.post('/api/:key', (req, res) => {
   const key = req.params.key;
   const value = req.body;
-  dataStore[key] = value;
-  console.log(`Data stored for key ${key}: ${value}`);
+  dataStore[key] = JSON.stringify(value);
+  console.log(`Data stored for key ${key}: ${dataStore[key]}`);
   res.json({ message: `Data stored for key: ${key}`, data: value });
 });
 
