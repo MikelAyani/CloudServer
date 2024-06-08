@@ -1,9 +1,8 @@
 
 import requests
-url = 'https://weather-server-chi.vercel.app/api/test'
+url = 'https://maiklof-http-server-chi.vercel.app/api/test'
 json_data = {
-    'Name': 'VD',
-    'Job':'Dev',
+    'Hello': 'World',
 }
 
 response = requests.post(url, json=json_data)
