@@ -16,10 +16,15 @@ app.use((req, res, next) => {
 });
 
 app.get('/api', (req, res) => {
-  console.log('GET /api called');
-  res.send('Hello, GET request!');
-});
+    console.log('GET /api called');
+    res.send('Hello, GET request!');
+  });
 
+app.get('/api/test', (req, res) => {
+console.log('GET /api/test called');
+res.send('Hello World!');
+});
+    
 app.post('/api', (req, res) => {
   console.log('POST /api called');
   const data = req.body;
