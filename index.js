@@ -24,7 +24,7 @@ app.get('/api/:key', (req, res) => {
   console.log(`GET /api/${key} called`);
   const data = dataStore[key];
   if (data) {
-    res.json({ key, data });
+    res.json(data);
   } else {
     res.status(404).send(`No data found for key: ${key}`);
   }
