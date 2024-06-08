@@ -22,8 +22,13 @@ app.use((req, res, next) => {
 app.post('/api/:key', (req, res) => {
   const key = req.params.key;
   const value = req.body;
-  dataStore[key] = JSON.stringify(value);
-  console.log(`Data stored for key ${key}: ${dataStore[key]}`);
+  console.log(`POST /api/${key} called with data: ${JSON.stringify(value)}`);
+  if (!value || typeof value !== 'object') {
+    res.status(400).send('Invalid JSON data');
+    return;
+  }
+  dataStore[key] = value;
+  console.log(`Data stored for key ${key}: ${JSON.stringify(dataStore[key])}`);
   res.json({ message: `Data stored for key: ${key}`, data: value });
 });
 
@@ -33,7 +38,7 @@ app.get('/api/:key', (req, res) => {
   console.log(`GET /api/${key} called`);
   const data = dataStore[key];
   if (data) {
-    res.json({ "data": data });
+    res.json({ key, data });
   } else {
     res.status(404).send(`No data found for key: ${key}`);
   }
