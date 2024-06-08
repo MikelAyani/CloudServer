@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # File to store the data
-DATA_FILE = 'data_store.json'
+DATA_FILE = 'tmp/data_store.json'
 
 # In-memory data store
 data_store = {}
