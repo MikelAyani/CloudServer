@@ -37,6 +37,7 @@ def process_test():
     # Return processed data in a dictionary
     return jsonify({"Hello":"World"})
 
+'''
 @app.route('/process/dashboard', methods=['POST'])
 def process_dashboard():
     events_csv = request.form['events_csv']
@@ -135,6 +136,7 @@ def process_dashboard():
         "healthy_orgs_names": healthy_orgs_names,
         "less_active_orgs_names": less_active_orgs_names
     })
+'''
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
