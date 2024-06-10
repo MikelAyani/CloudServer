@@ -5,6 +5,7 @@ from io import StringIO
 import json
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024  # 16 MB, adjust as needed
 
 # Initialize Redis connection
 redis_client = KV()
