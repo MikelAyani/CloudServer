@@ -1,8 +1,7 @@
 from flask import Flask, request, jsonify
 from vercel_kv_sdk import KV
 import pandas as pd
-import pyarrow as pa
-from io import StringIO
+from io import StringIO, BytesIO
 import json
 from datetime import datetime, timedelta
 
@@ -47,8 +46,10 @@ def process_user_events():
     # Load the events CSV file
     csv = request.form['data']
     df = pd.read_csv(StringIO(csv), delimiter=";")
-    df_compressed = pa.serialize(df).to_buffer().to_pybytes()
-    redis_client.set("user_events", df_compressed)
+    buffer = BytesIO()
+    df.to_pickle(buffer)
+    pickled_df = buffer.getvalue()
+    redis_client.set("user_events", pickled_df)
     return jsonify({"user_events uploaded":df.shape[0]})
 
 @app.route('/process/organizations', methods=['POST'])
@@ -56,19 +57,23 @@ def process_organizations():
     # Load the events CSV file
     csv = request.form['data']
     df = pd.read_csv(StringIO(csv), delimiter=";")
-    df_compressed = pa.serialize(df).to_buffer().to_pybytes()
-    redis_client.set("organizations", df_compressed)
+    buffer = BytesIO()
+    df.to_pickle(buffer)
+    pickled_df = buffer.getvalue()
+    redis_client.set("organizations", pickled_df)
     return jsonify({"organizations uploaded":df.shape[0]})
 
 @app.route('/process/dashboard', methods=['POST'])
 def process_dashboard():
     # Load the events CSV file
-    df_compressed = redis_client.get("user_events")
-    df = pa.deserialize(df_compressed)
+    pickled_df = redis_client.get("user_events")
+    buffer = BytesIO(pickled_df)
+    df = pd.read_pickle(buffer)
     
     # Load the organization CSV file with the correct delimiter
-    org_df_compressed = redis_client.get("organizations")
-    org_df = pa.deserialize(org_df_compressed)
+    pickled_org_df = redis_client.get("organizations")
+    buffer = BytesIO(pickled_df)
+    org_df = pd.read_pickle(buffer)    
 
     if request.is_json:
         data = request.json
