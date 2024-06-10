@@ -49,7 +49,11 @@ def process_dashboard():
     if not events_csv or not orgs_csv:
         return jsonify({"error": "Missing data"}), 400
     else:
-        return jsonify({"events_csv": events_csv.shape[0], "orgs_csv":orgs_csv.shape[0]}
+        return jsonify({
+            "events_csv": events_csv.shape[0], 
+            "orgs_csv":orgs_csv.shape[0],
+            "max_length":app.config['MAX_CONTENT_LENGTH'],
+            })
 
     # Load and process the CSV data
     events_df = pd.read_csv(StringIO(events_csv), delimiter=";")
