@@ -46,10 +46,7 @@ def process_user_events():
     # Load the events CSV file
     csv = request.form['data']
     df = pd.read_csv(StringIO(csv), delimiter=";")
-    buffer = BytesIO()
-    df.to_pickle(buffer)
-    pickled_df = buffer.getvalue()
-    redis_client.set("user_events", pickled_df)
+    redis_client.set("user_events", df.to_json())
     return jsonify({"user_events uploaded":df.shape[0]})
 
 @app.route('/process/organizations', methods=['POST'])
@@ -57,23 +54,18 @@ def process_organizations():
     # Load the events CSV file
     csv = request.form['data']
     df = pd.read_csv(StringIO(csv), delimiter=";")
-    buffer = BytesIO()
-    df.to_pickle(buffer)
-    pickled_df = buffer.getvalue()
-    redis_client.set("organizations", pickled_df)
+    redis_client.set("organizations", df.to_json())
     return jsonify({"organizations uploaded":df.shape[0]})
 
 @app.route('/process/dashboard', methods=['POST'])
 def process_dashboard():
     # Load the events CSV file
-    pickled_df = redis_client.get("user_events")
-    buffer = BytesIO(pickled_df)
-    df = pd.read_pickle(buffer)
+    json_df = redis_client.get("user_events")
+    df = pd.read_json(json_df)
     
     # Load the organization CSV file with the correct delimiter
-    pickled_org_df = redis_client.get("organizations")
-    buffer = BytesIO(pickled_df)
-    org_df = pd.read_pickle(buffer)    
+    json_orgs_df = redis_client.get("organizations")
+    org_df = pd.read_json(json_orgs_df)    
 
     if request.is_json:
         data = request.json
