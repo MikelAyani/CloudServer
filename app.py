@@ -47,6 +47,7 @@ def process_user_events():
     csv = request.form['data']
     df = pd.read_csv(StringIO(csv), delimiter=";")
     redis_client.set("user_events", df.to_msgpack(compress='zlib'))
+    return jsonify({"user_events uploaded":df.shape[0]})
 
 @app.route('/process/organizations', methods=['POST'])
 def process_organizations():
@@ -54,6 +55,7 @@ def process_organizations():
     csv = request.form['data']
     df = pd.read_csv(StringIO(csv), delimiter=";")
     redis_client.set("organizations", df.to_msgpack(compress='zlib'))
+    return jsonify({"organizations uploaded":df.shape[0]})
 
 @app.route('/process/dashboard', methods=['POST'])
 def process_dashboard():
@@ -68,6 +70,8 @@ def process_dashboard():
     else:
         data = request.data
     X_days = data.get("days", 7)
+    
+    return jsonify({"events":df.shape[0], "organizations":org_df.shape[0], "days":X_days})
     
     # Convert the expiration column to datetime, handling the "Expired" status
     org_df['expiration'] = pd.to_datetime(org_df['expiration'].replace('Expired', pd.NaT), errors='coerce')
