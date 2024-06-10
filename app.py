@@ -40,7 +40,7 @@ def process_test():
     orgs_df = pd.read_csv(StringIO(orgs_csv), delimiter=",")
     return jsonify({"Hello":orgs_df.shape[0]})
 
-'''
+
 @app.route('/process/dashboard', methods=['POST'])
 def process_dashboard():
     events_csv = request.form['events_csv']
@@ -139,7 +139,7 @@ def process_dashboard():
         "healthy_orgs_names": healthy_orgs_names,
         "less_active_orgs_names": less_active_orgs_names
     })
-'''
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
