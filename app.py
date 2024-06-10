@@ -35,7 +35,9 @@ def list_data():
 @app.route('/process/test', methods=['POST'])
 def process_test():
     # Return processed data in a dictionary
-    return jsonify({"Hello":"World"})
+    orgs_csv = request.form['orgs_csv']
+    orgs_df = pd.read_csv(StringIO(orgs_csv), delimiter=",")
+    return jsonify({"Hello":orgs_df.shape[0]})
 
 '''
 @app.route('/process/dashboard', methods=['POST'])
