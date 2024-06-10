@@ -32,8 +32,13 @@ def store_data(key):
 def list_data():
     return jsonify({'message': 'Welcome to the API'})
 
+@app.route('/process/test', methods=['POST'])
+def process_test():
+    # Return processed data in a dictionary
+    return jsonify({"Hello":"World"})
+
 @app.route('/process/dashboard', methods=['POST'])
-def process_data():
+def process_dashboard():
     events_csv = request.form['events_csv']
     orgs_csv = request.form['orgs_csv']
 
