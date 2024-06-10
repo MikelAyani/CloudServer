@@ -152,7 +152,7 @@ def process_dashboard():
     healthy_orgs_names = [org_map[org] for org in healthy_orgs if org in org_map]
     less_active_orgs_names = [org_map[org] for org in less_active_orgs if org in org_map]
 
-    if True:
+    if False:
         print("Healthy Organizations:")
         print(healthy_orgs_names)
         print("Less Active Organizations:")
