@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from vercel_kv_sdk import KV
-import pandas as pd
-from io import StringIO
+#import pandas as pd
+#from io import StringIO
 import json
 
 app = Flask(__name__)
